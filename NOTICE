@@ -1,0 +1,17 @@
+Skylight Guard
+Copyright (c) 2026 CloudLab Works
+
+This project is derived from, and includes code from, the following
+MIT-licensed projects. Their copyright notices are preserved in LICENSE.
+
+  * devinslick/skylight_hass (v3.0.0)
+    https://github.com/devinslick/skylight_hass
+  * MegaTheLEGEND/skylight_calendar (the project skylight_hass was forked from)
+    https://github.com/MegaTheLEGEND/skylight_calendar
+
+The calendar event write endpoint and flat request-body convention follow the
+public dknowles2/pyskylight library (https://github.com/dknowles2/pyskylight).
+No pyskylight code is included.
+
+Skylight is a trademark of its owner. This project is not affiliated with,
+endorsed by, or supported by Skylight.
