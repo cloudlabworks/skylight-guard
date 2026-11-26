@@ -1,0 +1,69 @@
+create_event:
+  fields:
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: skylight_guard
+    summary:
+      required: true
+      example: Soccer practice
+      selector:
+        text: {}
+    description:
+      required: false
+      selector:
+        text:
+          multiline: true
+    location:
+      required: false
+      selector:
+        text: {}
+    start_date_time:
+      required: false
+      example: "2026-01-01 16:00:00"
+      selector:
+        datetime: {}
+    end_date_time:
+      required: false
+      example: "2026-01-01 17:00:00"
+      selector:
+        datetime: {}
+    start_date:
+      required: false
+      example: "2026-01-01"
+      selector:
+        date: {}
+    end_date:
+      required: false
+      example: "2026-01-02"
+      selector:
+        date: {}
+    categories:
+      required: false
+      example: "Family"
+      selector:
+        text:
+          multiple: true
+    private:
+      required: false
+      default: false
+      selector:
+        boolean: {}
+upload_media:
+  fields:
+    file_path:
+      required: true
+      example: /config/www/snapshot.jpg
+      selector:
+        text: {}
+    caption:
+      required: false
+      example: Family dinner tonight
+      selector:
+        text: {}
+    config_entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: skylight_guard

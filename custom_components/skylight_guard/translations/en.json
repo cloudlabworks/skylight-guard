@@ -1,0 +1,117 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sign in to Skylight",
+        "description": "1. [Open Skylight sign-in]({auth_url}) in a new tab.\n2. Sign in with your Skylight email and password.\n3. When the page finishes loading, look at the browser address bar. It contains `?code=...`.\n4. Copy the value of `code` (or the whole URL, either works) and paste it below quickly: codes expire in about 30 seconds.",
+        "data": {
+          "code": "Authorization code"
+        }
+      },
+      "pick_frame": {
+        "title": "Choose your Skylight frame",
+        "description": "This Skylight account has more than one frame. Pick one to set up now; you can add the others later.",
+        "data": {
+          "frame_id": "Frame"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the Skylight API. Try again in a moment.",
+      "invalid_auth": "That code was rejected. Codes expire in about 30 seconds; open the link again to get a fresh one.",
+      "invalid_code": "That does not look like a Skylight authorization code. Paste the value of `code=` from the address bar (or the whole URL).",
+      "no_frames": "No Skylight frames were found on this account."
+    },
+    "abort": {
+      "already_configured": "This Skylight frame is already configured.",
+      "all_frames_configured": "Every frame on this account is already configured in Home Assistant.",
+      "reauth_successful": "Skylight authentication refreshed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Skylight Guard",
+        "description": "A Skylight frame shows every event to anyone in the room. Choose which profiles Home Assistant may write events to. Leaving the allowlist empty denies every write.",
+        "data": {
+          "allowed_categories": "Profiles Home Assistant may write to (allowlist)",
+          "default_category": "Default write profile (used by the calendar UI)",
+          "show_private_titles": "Show titles of private-marked events in the audit sensor",
+          "flag_uncategorized": "Count events without a profile as rogue"
+        }
+      }
+    },
+    "error": {
+      "default_not_allowed": "The default write profile must also be in the allowlist."
+    },
+    "abort": {
+      "not_loaded": "Load the integration first (it needs the frame's profile list)."
+    }
+  },
+  "services": {
+    "create_event": {
+      "name": "Create event (guarded)",
+      "description": "Create a Skylight calendar event. Refused if it looks private or targets a profile outside the allowlist.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Frame",
+          "description": "Skylight Guard entry to write to. Only required with multiple frames."
+        },
+        "summary": {
+          "name": "Title",
+          "description": "Event title shown on the frame."
+        },
+        "description": {
+          "name": "Description",
+          "description": "Optional event description."
+        },
+        "location": {
+          "name": "Location",
+          "description": "Optional event location."
+        },
+        "start_date_time": {
+          "name": "Start time",
+          "description": "Start of a timed event."
+        },
+        "end_date_time": {
+          "name": "End time",
+          "description": "End of a timed event. Defaults to one hour after start."
+        },
+        "start_date": {
+          "name": "Start date",
+          "description": "Start of an all-day event."
+        },
+        "end_date": {
+          "name": "End date",
+          "description": "Exclusive end of an all-day event. Defaults to the day after start."
+        },
+        "categories": {
+          "name": "Profiles",
+          "description": "Profile names or IDs to assign. Defaults to the default write profile."
+        },
+        "private": {
+          "name": "Private",
+          "description": "Marks the event private. Private events are always refused."
+        }
+      }
+    },
+    "upload_media": {
+      "name": "Upload media",
+      "description": "Upload a photo or short video to a Skylight frame.",
+      "fields": {
+        "file_path": {
+          "name": "File path",
+          "description": "Absolute path to the media file. Must be readable by Home Assistant."
+        },
+        "caption": {
+          "name": "Caption",
+          "description": "Optional caption shown alongside the photo on the frame."
+        },
+        "config_entry_id": {
+          "name": "Frame",
+          "description": "Skylight Guard entry to upload to. Only required with multiple frames."
+        }
+      }
+    }
+  }
+}
