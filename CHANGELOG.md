@@ -16,8 +16,8 @@ All notable changes to this project are documented here. The format follows
   profiles outside a configurable allowlist. Empty allowlist denies all.
 - Options flow: profile allowlist, default write profile, audit settings.
 - Calendar event create and delete on the calendar entity, plus the
-  `skylight_guard.create_event` action, all through the guard. The create
-  payload field names are UNVERIFIED (see README).
+  `skylight_guard.create_event` action, all through the guard. Payload shape
+  confirmed against a real frame.
 - `rogue_events` audit sensor and `skylight_guard_rogue_event` bus event.
 - Blueprints: rogue event alert, morning greeting with weather, chore due
   reminder.

@@ -319,8 +319,8 @@ class SkylightAPI:
     async def create_calendar_event(self, frame_id: str, body: dict) -> dict:
         """Create a calendar event.
 
-        Endpoint and flat-body convention follow dknowles2/pyskylight. The body
-        field names are UNVERIFIED; see ``event_payload.build_event_payload``.
+        Endpoint and flat-body convention follow dknowles2/pyskylight. Build the
+        body with ``event_payload.build_event_payload``.
         Callers must run the guard (``guard.check_event``) before calling this.
         """
         return await self._request(

@@ -162,16 +162,13 @@ The notify blueprints take the notify action name as text (for example
 - **Impersonates the mobile client.** Like upstream, it signs in with
   Skylight's own `skylight-mobile` OAuth client ID. Skylight could block that
   at any time. Use at your own risk.
-- **Event write payload is UNVERIFIED.** The create and delete endpoints
-  (`POST` and `DELETE /api/frames/{frame}/calendar_events`) and the rule that
-  writes take a flat JSON body come from the public
-  [pyskylight](https://github.com/dknowles2/pyskylight) library and its API
-  notes. The **field names** in the create body (`summary`, `starts_at`,
-  `ends_at`, `all_day`, `timezone`, `category_ids`, `description`, `location`)
-  and the all-day format (date strings, exclusive end) are not documented
-  anywhere public. They mirror the fields Skylight returns when reading events.
-  All of this lives in one function, `event_payload.build_event_payload`. Please
-  open an issue if a create fails or lands without its profile.
+- **Event writes** use `POST` and `DELETE /api/frames/{frame}/calendar_events`
+  with a flat JSON body (`summary`, `starts_at`, `ends_at`, `all_day`,
+  `timezone`, `kind`, `category_ids`, `description`, `location`). This shape
+  was confirmed against a real frame by the maintainers. All-day events are
+  sent with an inclusive end date; timed events must carry a UTC offset
+  (Skylight stores naive times as UTC). Open an issue if a create fails or
+  lands without its profile.
 - **Recurring events** cannot be created or deleted yet.
 - **The private flag on read** (`private`, `is_private`, `visibility`) is a
   best guess; Skylight may not expose one. Markers in the title are reliable.
