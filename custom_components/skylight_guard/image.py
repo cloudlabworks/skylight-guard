@@ -25,14 +25,10 @@ async def async_setup_entry(
 ) -> None:
     data = hass.data[DOMAIN][entry.entry_id]
     coord: SkylightPhotosCoordinator = data["photos_coordinator"]
-    async_add_entities(
-        [SkylightLatestPhoto(hass, coord, data["frame_id"], data["frame_name"])]
-    )
+    async_add_entities([SkylightLatestPhoto(hass, coord, data["frame_id"], data["frame_name"])])
 
 
-class SkylightLatestPhoto(
-    CoordinatorEntity[SkylightPhotosCoordinator], ImageEntity
-):
+class SkylightLatestPhoto(CoordinatorEntity[SkylightPhotosCoordinator], ImageEntity):
     _attr_has_entity_name = True
     _attr_name = "Latest photo"
     _attr_icon = "mdi:image"

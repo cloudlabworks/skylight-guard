@@ -41,24 +41,18 @@ async def async_setup_entry(
     # 1) One entity per Skylight list.
     for list_id, list_data in (lists_coord.data or {}).items():
         entities.append(
-            SkylightTodoList(
-                lists_coord, api, frame_id, frame_name, list_id, list_data["name"]
-            )
+            SkylightTodoList(lists_coord, api, frame_id, frame_name, list_id, list_data["name"])
         )
 
     # 2) One entity per family member: their chore queue (completeable from HA).
     for cat_id, label in _profile_categories(sensor_coord.data or {}):
         entities.append(
-            SkylightMemberChoreTodo(
-                sensor_coord, api, frame_id, frame_name, cat_id, label
-            )
+            SkylightMemberChoreTodo(sensor_coord, api, frame_id, frame_name, cat_id, label)
         )
 
     async_add_entities(entities)
 
-    known_lists: set[str] = {
-        e.list_id for e in entities if isinstance(e, SkylightTodoList)
-    }
+    known_lists: set[str] = {e.list_id for e in entities if isinstance(e, SkylightTodoList)}
 
     @callback
     def _handle_lists_update() -> None:
@@ -70,9 +64,7 @@ async def async_setup_entry(
         for lid in new_ids:
             ldata = lists_coord.data[lid]
             new_entities.append(
-                SkylightTodoList(
-                    lists_coord, api, frame_id, frame_name, lid, ldata["name"]
-                )
+                SkylightTodoList(lists_coord, api, frame_id, frame_name, lid, ldata["name"])
             )
             known_lists.add(lid)
         if new_entities:
@@ -149,15 +141,9 @@ class SkylightTodoList(CoordinatorEntity[SkylightListsCoordinator], TodoListEnti
         if item.summary is not None:
             attrs["name"] = item.summary
         if item.status is not None:
-            attrs["status"] = (
-                "completed"
-                if item.status == TodoItemStatus.COMPLETED
-                else "pending"
-            )
+            attrs["status"] = "completed" if item.status == TodoItemStatus.COMPLETED else "pending"
         if attrs and item.uid:
-            await self._api.update_list_item(
-                self._frame_id, self.list_id, item.uid, attrs
-            )
+            await self._api.update_list_item(self._frame_id, self.list_id, item.uid, attrs)
             await self.coordinator.async_request_refresh()
 
     async def async_delete_todo_items(self, uids: list[str]) -> None:
@@ -166,9 +152,7 @@ class SkylightTodoList(CoordinatorEntity[SkylightListsCoordinator], TodoListEnti
         await self.coordinator.async_request_refresh()
 
 
-class SkylightMemberChoreTodo(
-    CoordinatorEntity[SkylightSensorCoordinator], TodoListEntity
-):
+class SkylightMemberChoreTodo(CoordinatorEntity[SkylightSensorCoordinator], TodoListEntity):
     """A single family member's chore queue as a HA Todo entity.
 
     Read-only for create/delete (Skylight chore CRUD is nontrivial from the app UX),
@@ -227,30 +211,19 @@ class SkylightMemberChoreTodo(
                 else TodoItemStatus.NEEDS_ACTION
             )
             uid = str(c.get("id"))
-            due_raw = (
-                attrs.get("start")
-                or attrs.get("date")
-                or attrs.get("due_date")
-                or ""
-            )
+            due_raw = attrs.get("start") or attrs.get("date") or attrs.get("due_date") or ""
             due: date | datetime | None = None
             if isinstance(due_raw, str) and len(due_raw) >= 10:
                 try:
                     due = date.fromisoformat(due_raw[:10])
                 except ValueError:
                     due = None
-            result.append(
-                TodoItem(summary=summary, uid=uid, status=status, due=due)
-            )
+            result.append(TodoItem(summary=summary, uid=uid, status=status, due=due))
         return result
 
     async def async_update_todo_item(self, item: TodoItem) -> None:
         if not item.uid or item.status is None:
             return
-        status = (
-            "completed"
-            if item.status == TodoItemStatus.COMPLETED
-            else "pending"
-        )
+        status = "completed" if item.status == TodoItemStatus.COMPLETED else "pending"
         await self._api.update_chore_status(self._frame_id, item.uid, status)
         await self.coordinator.async_request_refresh()

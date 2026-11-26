@@ -50,12 +50,8 @@ async def async_setup_entry(
 
     # Per-member profile categories -> chores + rewards sensors.
     for cat_id, label in _profile_categories(coord.data or {}):
-        entities.append(
-            SkylightRewardPointsSensor(coord, frame_id, frame_name, cat_id, label)
-        )
-        entities.append(
-            SkylightMemberChoresSensor(coord, frame_id, frame_name, cat_id, label)
-        )
+        entities.append(SkylightRewardPointsSensor(coord, frame_id, frame_name, cat_id, label))
+        entities.append(SkylightMemberChoresSensor(coord, frame_id, frame_name, cat_id, label))
 
     # Per-slot meal sensors (Breakfast/Lunch/Dinner/Snack), always present so cards work
     # even when no meal is planned for a slot.
@@ -67,9 +63,7 @@ async def async_setup_entry(
 
     # Guard audit: upcoming events that break the privacy / allowlist policy.
     entities.append(
-        SkylightRogueEventsSensor(
-            data["calendar_coordinator"], entry, frame_id, frame_name
-        )
+        SkylightRogueEventsSensor(data["calendar_coordinator"], entry, frame_id, frame_name)
     )
 
     async_add_entities(entities)
@@ -78,10 +72,7 @@ async def async_setup_entry(
 def _category_label_map(data: dict) -> dict[str, str]:
     """category_id -> label lookup covering all categories (profiles + calendar buckets)."""
     cats = (data.get("categories") or {}).get("data", [])
-    return {
-        str(c.get("id")): c.get("attributes", {}).get("label", "")
-        for c in cats
-    }
+    return {str(c.get("id")): c.get("attributes", {}).get("label", "") for c in cats}
 
 
 def _enrich_chore(c: dict, cat_map: dict[str, str]) -> dict[str, Any]:
@@ -119,9 +110,7 @@ def _meal_included_maps(data: dict) -> tuple[dict[str, dict], dict[str, dict]]:
     return cats, recipes
 
 
-def _enrich_meal(
-    m: dict, cats: dict[str, dict], recipes: dict[str, dict]
-) -> dict[str, Any]:
+def _enrich_meal(m: dict, cats: dict[str, dict], recipes: dict[str, dict]) -> dict[str, Any]:
     attrs = m.get("attributes", {}) if isinstance(m, dict) else {}
     rels = m.get("relationships", {}) or {}
     cat_id = ((rels.get("meal_category") or {}).get("data") or {}).get("id")
@@ -189,12 +178,7 @@ def _chore_assignee_id(c: dict) -> str | None:
 
 
 def _chore_when(attrs: dict) -> str:
-    return (
-        attrs.get("start")
-        or attrs.get("date")
-        or attrs.get("due_date")
-        or ""
-    )
+    return attrs.get("start") or attrs.get("date") or attrs.get("due_date") or ""
 
 
 def _meal_when(attrs: dict) -> str:
@@ -497,9 +481,7 @@ class SkylightRewardPointsSensor(_SkylightBaseSensor):
         return None
 
 
-class SkylightRogueEventsSensor(
-    CoordinatorEntity[SkylightCalendarCoordinator], SensorEntity
-):
+class SkylightRogueEventsSensor(CoordinatorEntity[SkylightCalendarCoordinator], SensorEntity):
     """Count of upcoming events that are private or outside the allowlist.
 
     State: number of rogue events in the next 14 days.
@@ -541,15 +523,11 @@ class SkylightRogueEventsSensor(
             allowlist(self._entry),
             dt_util.now(),
             horizon_days=AUDIT_HORIZON_DAYS,
-            flag_uncategorized=bool(
-                self._entry.options.get(CONF_FLAG_UNCATEGORIZED, False)
-            ),
+            flag_uncategorized=bool(self._entry.options.get(CONF_FLAG_UNCATEGORIZED, False)),
         )
 
     def _display_title(self, ev: RogueEvent) -> str:
-        if ev.is_private and not self._entry.options.get(
-            CONF_SHOW_PRIVATE_TITLES, False
-        ):
+        if ev.is_private and not self._entry.options.get(CONF_SHOW_PRIVATE_TITLES, False):
             return REDACTED_TITLE
         return ev.title
 

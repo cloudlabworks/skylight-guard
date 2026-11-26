@@ -70,9 +70,17 @@ ATTR_CONFIG_ENTRY_ID = "config_entry_id"
 
 _ALLOWED_EXTS = {
     # images
-    "jpg", "jpeg", "png", "gif", "heic", "heif", "webp",
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "heic",
+    "heif",
+    "webp",
     # videos (Skylight app accepts short clips)
-    "mp4", "mov", "m4v",
+    "mp4",
+    "mov",
+    "m4v",
 }
 
 UPLOAD_MEDIA_SCHEMA = vol.Schema(
@@ -94,9 +102,7 @@ CREATE_EVENT_SCHEMA = vol.All(
             vol.Optional("end_date_time"): cv.datetime,
             vol.Optional("start_date"): cv.date,
             vol.Optional("end_date"): cv.date,
-            vol.Optional("categories", default=[]): vol.All(
-                cv.ensure_list, [cv.string]
-            ),
+            vol.Optional("categories", default=[]): vol.All(cv.ensure_list, [cv.string]),
             vol.Optional("private", default=False): cv.boolean,
         }
     ),
@@ -179,8 +185,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         ext = path.suffix.lstrip(".").lower() or "jpg"
         if ext not in _ALLOWED_EXTS:
             raise HomeAssistantError(
-                f"Extension .{ext} not supported. Allowed: "
-                + ", ".join(sorted(_ALLOWED_EXTS))
+                f"Extension .{ext} not supported. Allowed: " + ", ".join(sorted(_ALLOWED_EXTS))
             )
         content_type = mimetypes.guess_type(str(path))[0] or f"image/{ext}"
         file_data = await hass.async_add_executor_job(path.read_bytes)

@@ -41,9 +41,7 @@ def category_labels(entry_data: Mapping[str, Any]) -> dict[str, str]:
     return out
 
 
-def resolve_categories(
-    requested: Iterable[str] | None, labels: Mapping[str, str]
-) -> list[str]:
+def resolve_categories(requested: Iterable[str] | None, labels: Mapping[str, str]) -> list[str]:
     """Map profile names or IDs to category IDs.
 
     Unknown values are passed through unchanged so the guard reports them as

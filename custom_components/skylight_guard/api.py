@@ -106,9 +106,7 @@ def _sigv4_sign(
         ),
         "aws4_request",
     )
-    signature = hmac.new(
-        signing_key, string_to_sign.encode(), hashlib.sha256
-    ).hexdigest()
+    signature = hmac.new(signing_key, string_to_sign.encode(), hashlib.sha256).hexdigest()
 
     return {
         **headers,
@@ -233,9 +231,7 @@ class SkylightAPI:
         ) as resp:
             body = await resp.text()
             if resp.status != 200:
-                raise SkylightAuthError(
-                    f"OAuth refresh failed ({resp.status}): {body[:200]}"
-                )
+                raise SkylightAuthError(f"OAuth refresh failed ({resp.status}): {body[:200]}")
             data = _json.loads(body)
 
         new_access = data.get("access_token")
@@ -249,9 +245,7 @@ class SkylightAPI:
 
         if self._token_update_cb is not None:
             try:
-                await self._token_update_cb(
-                    new_access, new_refresh, self._device_fingerprint
-                )
+                await self._token_update_cb(new_access, new_refresh, self._device_fingerprint)
             except Exception:  # noqa: BLE001
                 _LOGGER.exception("Token persistence callback failed")
 
@@ -286,9 +280,7 @@ class SkylightAPI:
             if d.get("id") is not None
         ]
 
-    async def patch_device(
-        self, frame_id: str, device_id: str, attributes: dict
-    ) -> dict:
+    async def patch_device(self, frame_id: str, device_id: str, attributes: dict) -> dict:
         """PATCH device settings (brightness 0-255, slideshow_speed, sleep_mode_on, …).
 
         Verified request shape: plain-JSON body, keys sent flat (no JSON:API
@@ -329,9 +321,7 @@ class SkylightAPI:
 
     async def delete_calendar_event(self, frame_id: str, event_id: str) -> None:
         """Delete a (non-recurring) calendar event. Endpoint per pyskylight."""
-        await self._request(
-            "DELETE", f"/api/frames/{frame_id}/calendar_events/{event_id}"
-        )
+        await self._request("DELETE", f"/api/frames/{frame_id}/calendar_events/{event_id}")
 
     async def get_source_calendars(self, frame_id: str) -> dict:
         return await self._request("GET", f"/api/frames/{frame_id}/source_calendars")
@@ -394,12 +384,8 @@ class SkylightAPI:
             "PUT", f"/api/frames/{frame_id}/chores/{chore_id}", json_body=body
         )
 
-    async def update_chore_status(
-        self, frame_id: str, chore_id: str, status: str
-    ) -> dict:
-        body = {
-            "data": {"type": "chore", "id": chore_id, "attributes": {"status": status}}
-        }
+    async def update_chore_status(self, frame_id: str, chore_id: str, status: str) -> dict:
+        body = {"data": {"type": "chore", "id": chore_id, "attributes": {"status": status}}}
         return await self._request(
             "PUT", f"/api/frames/{frame_id}/chores/{chore_id}", json_body=body
         )
@@ -430,9 +416,7 @@ class SkylightAPI:
         return await self._request("GET", f"/api/frames/{frame_id}/task_box/items")
 
     async def get_recipe(self, frame_id: str, recipe_id: str) -> dict:
-        return await self._request(
-            "GET", f"/api/frames/{frame_id}/meals/recipes/{recipe_id}"
-        )
+        return await self._request("GET", f"/api/frames/{frame_id}/meals/recipes/{recipe_id}")
 
     async def get_cloud_upload_credentials(self) -> dict:
         """Fetch short-lived S3 credentials for uploading media."""
@@ -490,14 +474,10 @@ class SkylightAPI:
         )
         put_headers["Content-Length"] = str(len(file_data))
 
-        async with self._session.put(
-            s3_url, data=file_data, headers=put_headers
-        ) as resp:
+        async with self._session.put(s3_url, data=file_data, headers=put_headers) as resp:
             if resp.status not in (200, 204):
                 text = await resp.text()
-                raise SkylightAPIError(
-                    f"S3 upload failed {resp.status}: {text[:200]}"
-                )
+                raise SkylightAPIError(f"S3 upload failed {resp.status}: {text[:200]}")
             etag = (resp.headers.get("ETag") or "").strip('"')
 
         return await self.notify_media_upload(

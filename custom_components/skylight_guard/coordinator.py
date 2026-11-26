@@ -154,15 +154,11 @@ class SkylightSensorCoordinator(DataUpdateCoordinator):
             "task_box": None,
         }
         try:
-            result["chores"] = await self.api.get_chores(
-                self.frame_id, today.isoformat(), week_end
-            )
+            result["chores"] = await self.api.get_chores(self.frame_id, today.isoformat(), week_end)
         except (SkylightAuthError, SkylightAPIError) as err:
             _LOGGER.debug("chores fetch failed: %s", err)
         try:
-            meals = await self.api.get_meals(
-                self.frame_id, today.isoformat(), week_end
-            )
+            meals = await self.api.get_meals(self.frame_id, today.isoformat(), week_end)
             result["meals"] = meals
             # Preserve JSON:API `included` payload for recipe / category label lookup.
             if isinstance(meals, dict):
@@ -222,8 +218,7 @@ class SkylightFrameCoordinator(DataUpdateCoordinator):
 
         if not devices:
             raise UpdateFailed(
-                f"Skylight frame {self.frame_id} has no device attached, "
-                "cannot control settings"
+                f"Skylight frame {self.frame_id} has no device attached, cannot control settings"
             )
 
         # A frame is a 1:1 device pairing in production; if that ever changes we

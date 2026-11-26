@@ -134,9 +134,7 @@ def test_missing_category_refused(guard):
 
 
 def test_blank_category_values_ignored(guard):
-    assert codes(guard, "Harmless", None, ["", "  ", None], ALLOW) == [
-        guard.REASON_NO_CATEGORY
-    ]
+    assert codes(guard, "Harmless", None, ["", "  ", None], ALLOW) == [guard.REASON_NO_CATEGORY]
 
 
 def test_single_string_category(guard):

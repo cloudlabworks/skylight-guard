@@ -54,9 +54,7 @@ async def async_setup_entry(
     for sc in _current_sources():
         sid = sc["id"]
         entities.append(
-            SkylightSourceCalendar(
-                coord, entry, frame_id, frame_name, sid, sc.get("name") or sid
-            )
+            SkylightSourceCalendar(coord, entry, frame_id, frame_name, sid, sc.get("name") or sid)
         )
         seen.add(sid)
 
@@ -117,9 +115,7 @@ def _parse_events(raw_events: dict, source_id: str | None = None) -> list[Calend
     return events
 
 
-class _SkylightCalendarBase(
-    CoordinatorEntity[SkylightCalendarCoordinator], CalendarEntity
-):
+class _SkylightCalendarBase(CoordinatorEntity[SkylightCalendarCoordinator], CalendarEntity):
     _attr_has_entity_name = True
     _attr_supported_features = CalendarEntityFeature.DELETE_EVENT
 
@@ -159,9 +155,7 @@ class _SkylightCalendarBase(
             end = ev.end if isinstance(ev.end, datetime) else None
             if start and end and start <= now <= end:
                 return ev
-        upcoming = [
-            e for e in events if isinstance(e.start, datetime) and e.start >= now
-        ]
+        upcoming = [e for e in events if isinstance(e.start, datetime) and e.start >= now]
         upcoming.sort(key=lambda e: e.start)
         return upcoming[0] if upcoming else None
 
@@ -213,9 +207,7 @@ class SkylightAggregateCalendar(_SkylightCalendarBase):
         no default configured the guard refuses the write.
         """
         if kwargs.get("rrule"):
-            raise HomeAssistantError(
-                "Recurring events are not supported by Skylight Guard yet."
-            )
+            raise HomeAssistantError("Recurring events are not supported by Skylight Guard yet.")
         await async_guarded_create(
             self.hass,
             self._entry,
@@ -233,9 +225,7 @@ class SkylightAggregateCalendar(_SkylightCalendarBase):
 class SkylightSourceCalendar(_SkylightCalendarBase):
     """Per-source-calendar entity (one per connected calendar)."""
 
-    def __init__(
-        self, coordinator, entry, frame_id, frame_name, source_id: str, source_name: str
-    ):
+    def __init__(self, coordinator, entry, frame_id, frame_name, source_id: str, source_name: str):
         super().__init__(coordinator, entry, frame_id, frame_name)
         self._source_id = str(source_id)
         self._attr_name = source_name

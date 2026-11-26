@@ -119,9 +119,7 @@ class SkylightGuardConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     # ── Primary user step ────────────────────────────────────────────────
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         errors: dict[str, str] = {}
 
         # Generate PKCE once per flow so refresh preserves it across form errors.
@@ -187,12 +185,8 @@ class SkylightGuardConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     # ── Frame selection ─────────────────────────────────────────────────
 
-    async def async_step_pick_frame(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        configured_ids = {
-            e.data.get(CONF_FRAME_ID) for e in self._async_current_entries()
-        }
+    async def async_step_pick_frame(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        configured_ids = {e.data.get(CONF_FRAME_ID) for e in self._async_current_entries()}
         available = [f for f in self._frames if f["id"] not in configured_ids]
         if not available:
             return self.async_abort(reason="all_frames_configured")
@@ -226,9 +220,7 @@ class SkylightGuardConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     # ── Reauth ──────────────────────────────────────────────────────────
 
     async def async_step_reauth(self, entry_data: dict[str, Any]) -> FlowResult:
-        self._reauth_entry = self.hass.config_entries.async_get_entry(
-            self.context["entry_id"]
-        )
+        self._reauth_entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_user()
 
     async def _finish_reauth(self) -> FlowResult:
@@ -246,12 +238,8 @@ class SkylightGuardConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     # ── Reconfigure ─────────────────────────────────────────────────────
 
-    async def async_step_reconfigure(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        self._reauth_entry = self.hass.config_entries.async_get_entry(
-            self.context["entry_id"]
-        )
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        self._reauth_entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_user()
 
     @staticmethod
@@ -278,9 +266,7 @@ def profile_options(categories_payload: dict | None) -> list[tuple[str, str]]:
 class SkylightGuardOptionsFlow(config_entries.OptionsFlow):
     """Configure which profiles Home Assistant may write to."""
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         entry_data = self.hass.data.get(DOMAIN, {}).get(self.config_entry.entry_id)
         if not entry_data:
             return self.async_abort(reason="not_loaded")
@@ -310,15 +296,11 @@ class SkylightGuardOptionsFlow(config_entries.OptionsFlow):
                     }
                 )
 
-        default_allowed = [
-            c for c in current.get(CONF_ALLOWED_CATEGORIES, []) if c in known
-        ]
+        default_allowed = [c for c in current.get(CONF_ALLOWED_CATEGORIES, []) if c in known]
         default_cat = current.get(CONF_DEFAULT_CATEGORY) or ""
         schema = vol.Schema(
             {
-                vol.Optional(
-                    CONF_ALLOWED_CATEGORIES, default=default_allowed
-                ): SelectSelector(
+                vol.Optional(CONF_ALLOWED_CATEGORIES, default=default_allowed): SelectSelector(
                     SelectSelectorConfig(
                         options=choices,
                         multiple=True,
@@ -329,9 +311,7 @@ class SkylightGuardOptionsFlow(config_entries.OptionsFlow):
                     CONF_DEFAULT_CATEGORY,
                     description={"suggested_value": default_cat or None},
                 ): SelectSelector(
-                    SelectSelectorConfig(
-                        options=choices, mode=SelectSelectorMode.DROPDOWN
-                    )
+                    SelectSelectorConfig(options=choices, mode=SelectSelectorMode.DROPDOWN)
                 ),
                 vol.Optional(
                     CONF_SHOW_PRIVATE_TITLES,

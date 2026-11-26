@@ -34,9 +34,7 @@ async def async_setup_entry(
     )
 
 
-class SkylightSleepModeSwitch(
-    CoordinatorEntity[SkylightFrameCoordinator], SwitchEntity
-):
+class SkylightSleepModeSwitch(CoordinatorEntity[SkylightFrameCoordinator], SwitchEntity):
     _attr_has_entity_name = True
     _attr_name = "Sleep mode"
     _attr_icon = "mdi:sleep"
@@ -73,8 +71,7 @@ class SkylightSleepModeSwitch(
         device_id = self._current_device_id
         if not device_id:
             raise RuntimeError(
-                "Skylight device_id not yet available, first coordinator refresh "
-                "hasn't completed"
+                "Skylight device_id not yet available, first coordinator refresh hasn't completed"
             )
         await self._api.patch_device(self._frame_id, device_id, attributes)
         await self.coordinator.async_request_refresh()

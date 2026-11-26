@@ -162,8 +162,7 @@ def evaluate_event(
             violations.append(
                 Violation(
                     REASON_CATEGORY_NOT_ALLOWED,
-                    "Event is assigned to profile(s) not in the allowlist: "
-                    + ", ".join(denied),
+                    "Event is assigned to profile(s) not in the allowlist: " + ", ".join(denied),
                 )
             )
 
@@ -179,9 +178,7 @@ def check_event(
     private: bool = False,
 ) -> None:
     """Raise ``GuardViolation`` unless the event may be written to the frame."""
-    violations = evaluate_event(
-        title, description, categories, allowlist, private=private
-    )
+    violations = evaluate_event(title, description, categories, allowlist, private=private)
     if violations:
         raise GuardViolation(violations)
 
