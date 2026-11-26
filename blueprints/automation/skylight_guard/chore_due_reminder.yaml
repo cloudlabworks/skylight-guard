@@ -1,0 +1,58 @@
+blueprint:
+  name: Skylight Guard - chore due reminder
+  description: >-
+    At a chosen time, send a notification listing today's chores that are
+    not complete yet, read from a Skylight Guard chores sensor (the whole
+    frame or one profile).
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/skylight_guard/chore_due_reminder.yaml
+  input:
+    chores_sensor:
+      name: Chores sensor
+      description: A "chores today" sensor from Skylight Guard.
+      selector:
+        entity:
+          integration: skylight_guard
+          domain: sensor
+    time:
+      name: Reminder time
+      default: "17:00:00"
+      selector:
+        time: {}
+    notify_service:
+      name: Notify service
+      description: Full name of the notify action, for example notify.mobile_app_my_phone.
+      default: notify.notify
+      selector:
+        text: {}
+    title:
+      name: Notification title
+      default: Chores still due
+      selector:
+        text: {}
+
+mode: single
+
+variables:
+  chores_sensor: !input chores_sensor
+  notify_service: !input notify_service
+  pending: >-
+    {{ (state_attr(chores_sensor, 'chores') or [])
+       | rejectattr('status', 'in', ['complete', 'completed'])
+       | map(attribute='summary') | list }}
+
+triggers:
+  - trigger: time
+    at: !input time
+
+conditions:
+  - condition: template
+    value_template: "{{ pending | count > 0 }}"
+
+actions:
+  - action: "{{ notify_service }}"
+    data:
+      title: !input title
+      message: "{{ pending | count }} chore(s) still due: {{ pending | join(', ') }}"

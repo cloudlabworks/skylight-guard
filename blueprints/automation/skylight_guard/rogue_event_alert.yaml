@@ -1,0 +1,56 @@
+blueprint:
+  name: Skylight Guard - rogue event alert
+  description: >-
+    Send a notification when the Skylight Guard audit finds a new upcoming
+    event that is private-marked or assigned to a profile outside the
+    allowlist. Triggered by the skylight_guard_rogue_event event, which fires
+    when the rogue_events count rises.
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/skylight_guard/rogue_event_alert.yaml
+  input:
+    notify_service:
+      name: Notify service
+      description: >-
+        Full name of the notify action to call, for example
+        notify.mobile_app_my_phone or notify.notify.
+      default: notify.notify
+      selector:
+        text: {}
+    title:
+      name: Notification title
+      default: Skylight Guard
+      selector:
+        text: {}
+    include_titles:
+      name: Include event titles
+      description: >-
+        Include the offending event titles in the message. Titles of
+        private-marked events are already redacted unless you enabled
+        "show private titles" in the integration options.
+      default: true
+      selector:
+        boolean: {}
+
+mode: queued
+max: 5
+
+variables:
+  notify_service: !input notify_service
+  include_titles: !input include_titles
+
+triggers:
+  - trigger: event
+    event_type: skylight_guard_rogue_event
+
+actions:
+  - action: "{{ notify_service }}"
+    data:
+      title: !input title
+      message: >-
+        {{ trigger.event.data.count }} upcoming Skylight event(s) break the
+        guard policy (was {{ trigger.event.data.previous_count }}).
+        {% if include_titles and trigger.event.data.titles %}
+        Events: {{ trigger.event.data.titles | join(', ') }}
+        {% endif %}

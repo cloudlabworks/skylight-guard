@@ -1,0 +1,75 @@
+blueprint:
+  name: Skylight Guard - morning greeting with weather
+  description: >-
+    Each morning, put an all-day greeting event with today's forecast on the
+    Skylight frame. The event goes through the guarded
+    skylight_guard.create_event action, so the profile must be in the
+    allowlist or the write is refused.
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/skylight_guard/morning_greeting.yaml
+  input:
+    frame:
+      name: Skylight frame
+      description: The Skylight Guard config entry to write to.
+      selector:
+        config_entry:
+          integration: skylight_guard
+    weather_entity:
+      name: Weather entity
+      selector:
+        entity:
+          domain: weather
+    profile:
+      name: Profile
+      description: >-
+        Profile name or ID to assign the event to. Must be allowlisted in the
+        Skylight Guard options. Leave empty to use the default write profile.
+      default: ""
+      selector:
+        text: {}
+    time:
+      name: Time
+      default: "06:00:00"
+      selector:
+        time: {}
+    greeting:
+      name: Greeting
+      default: Good morning!
+      selector:
+        text: {}
+
+mode: single
+
+variables:
+  profile: !input profile
+  greeting: !input greeting
+
+triggers:
+  - trigger: time
+    at: !input time
+
+actions:
+  - action: weather.get_forecasts
+    target:
+      entity_id: !input weather_entity
+    data:
+      type: daily
+    response_variable: forecast
+  - variables:
+      weather_id: !input weather_entity
+      today: "{{ forecast[weather_id].forecast[0] if forecast[weather_id].forecast else {} }}"
+      summary: >-
+        {{ greeting }}
+        {%- if today %} {{ today.condition | default('') | replace('-', ' ') }},
+        {{ today.temperature | default('?') | round(0) }}{{ state_attr(weather_id, 'temperature_unit') or '' }}
+        {%- if today.templow is defined %} / {{ today.templow | round(0) }}{{ state_attr(weather_id, 'temperature_unit') or '' }}{% endif %}
+        {%- endif %}
+  - action: skylight_guard.create_event
+    data:
+      config_entry_id: !input frame
+      summary: "{{ summary | trim }}"
+      start_date: "{{ now().date().isoformat() }}"
+      end_date: "{{ (now().date() + timedelta(days=1)).isoformat() }}"
+      categories: "{{ [profile] if profile else [] }}"
