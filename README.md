@@ -7,6 +7,36 @@ A Home Assistant custom integration for the [Skylight Calendar](https://www.ours
 frame that can **write** calendar events, with a **guard** in front of every write
 and an **audit** sensor that watches what the frame is showing.
 
+## Make it yours
+
+This repo is a starting kit, not a finished product. Fork it, point it at your
+own frame, find a new use for the screen in your kitchen, and send it back.
+
+1. **Get your copy.** Click **Use this template** (a clean repo of your own) or
+   **Fork** (to send changes back upstream).
+2. **Install the integration** from your copy through HACS (see
+   [Installation](#installation)). The guard starts read-only: nothing is written
+   until you allowlist a profile.
+3. **Import a blueprint** with one click, or write your own from
+   [`blueprints/automation/community/_template.yaml`](blueprints/automation/community/_template.yaml).
+4. **Share it back.** Open a pull request into
+   [`blueprints/automation/community/`](blueprints/automation/community/), or file a
+   [new-use idea](https://github.com/cloudlabworks/skylight-guard/issues/new?template=new_use.yml)
+   if you want help building it.
+
+| Blueprint | What it does | |
+|---|---|---|
+| `frame_bedtime` | Put the frame to sleep at night, wake it in the morning, or follow a quiet-mode toggle. | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fcloudlabworks%2Fskylight-guard%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fskylight_guard%2Fframe_bedtime.yaml) |
+| `home_event_to_frame` | Any Home Assistant change (trash day, guest home, washer done) becomes a guarded event on the frame. | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fcloudlabworks%2Fskylight-guard%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fskylight_guard%2Fhome_event_to_frame.yaml) |
+| `morning_greeting` | A daily all-day event with the weather forecast. | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fcloudlabworks%2Fskylight-guard%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fskylight_guard%2Fmorning_greeting.yaml) |
+| `chore_due_reminder` | Phone notification for today's chores that are still open. | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fcloudlabworks%2Fskylight-guard%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fskylight_guard%2Fchore_due_reminder.yaml) |
+| `rogue_event_alert` | Alert when something private or off-allowlist shows up on the frame. | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fcloudlabworks%2Fskylight-guard%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fskylight_guard%2Frogue_event_alert.yaml) |
+
+Ideas nobody has built yet: school-closure feed to an all-day event, "dinner's
+ready" from a kitchen button, sports schedules from a team calendar, a photo of
+the week from a camera snapshot via `skylight_guard.upload_media`, dimming the
+frame when the TV turns on. Pick one.
+
 ## Why this exists: the privacy problem
 
 A Skylight frame sits in a kitchen or hallway and shows every event on it to

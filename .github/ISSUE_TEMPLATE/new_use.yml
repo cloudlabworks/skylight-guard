@@ -1,0 +1,27 @@
+name: New use for Skylight
+description: An idea for something Home Assistant could do with a Skylight frame.
+labels: [idea]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What should show up on the frame, or happen to it, and when?
+      placeholder: When the washer finishes, put "Laundry done" on the frame for an hour.
+    validations:
+      required: true
+  - type: textarea
+    id: entities
+    attributes:
+      label: What it would read from
+      description: Sensors, integrations or services involved. No real IDs from your house.
+  - type: dropdown
+    id: build
+    attributes:
+      label: Will you build it?
+      options:
+        - I'd like to write the blueprint
+        - I'd like help writing it
+        - Just sharing the idea
+    validations:
+      required: true

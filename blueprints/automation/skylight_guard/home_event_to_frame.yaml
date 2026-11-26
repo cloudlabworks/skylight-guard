@@ -1,0 +1,86 @@
+blueprint:
+  name: Skylight Guard - put a home event on the frame
+  description: >-
+    When something happens in Home Assistant (trash day sensor, a guest
+    arriving, the washer finishing, a school-closure feed), write it to the
+    Skylight frame as an event. Every write goes through the guard: private
+    markers and non-allowlisted profiles are refused.
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/skylight_guard/home_event_to_frame.yaml
+  input:
+    frame:
+      name: Skylight frame
+      description: The Skylight Guard config entry to write to.
+      selector:
+        config_entry:
+          integration: skylight_guard
+    trigger_entity:
+      name: Trigger entity
+      description: The entity whose change should land on the frame.
+      selector:
+        entity: {}
+    to_state:
+      name: Trigger state
+      description: State that fires the write, for example "on" or "home".
+      default: "on"
+      selector:
+        text: {}
+    summary:
+      name: Event title
+      description: Template allowed, for example "Trash day" or "{{ trigger.to_state.name }} is home".
+      default: "{{ trigger.to_state.name }}"
+      selector:
+        text: {}
+    duration_minutes:
+      name: Duration (minutes)
+      description: Set 0 for an all-day event today.
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 1440
+          unit_of_measurement: min
+    profile:
+      name: Profile
+      description: >-
+        Profile name or ID to assign the event to. Must be allowlisted in the
+        Skylight Guard options. Leave empty to use the default write profile.
+      default: ""
+      selector:
+        text: {}
+
+mode: queued
+max: 5
+
+variables:
+  profile: !input profile
+  duration_minutes: !input duration_minutes
+  summary_template: !input summary
+
+triggers:
+  - trigger: state
+    entity_id: !input trigger_entity
+    to: !input to_state
+
+actions:
+  - if:
+      - condition: template
+        value_template: "{{ duration_minutes | int == 0 }}"
+    then:
+      - action: skylight_guard.create_event
+        data:
+          config_entry_id: !input frame
+          summary: "{{ summary_template }}"
+          start_date: "{{ now().date().isoformat() }}"
+          end_date: "{{ (now().date() + timedelta(days=1)).isoformat() }}"
+          categories: "{{ [profile] if profile else [] }}"
+    else:
+      - action: skylight_guard.create_event
+        data:
+          config_entry_id: !input frame
+          summary: "{{ summary_template }}"
+          start_date_time: "{{ now().isoformat() }}"
+          end_date_time: "{{ (now() + timedelta(minutes=duration_minutes | int)).isoformat() }}"
+          categories: "{{ [profile] if profile else [] }}"

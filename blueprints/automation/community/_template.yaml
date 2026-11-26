@@ -1,0 +1,40 @@
+# Starter blueprint. Copy to <your-github-name>/<short_name>.yaml and edit.
+# Replace OWNER/REPO and the path in source_url with your fork and file path.
+blueprint:
+  name: Skylight - my new use
+  description: >-
+    One or two sentences: what lands on (or happens to) the frame, and when.
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/community/_template.yaml
+  input:
+    frame:
+      name: Skylight frame
+      selector:
+        config_entry:
+          integration: skylight_guard
+    trigger_entity:
+      name: Trigger entity
+      selector:
+        entity: {}
+    summary:
+      name: Event title
+      default: Something happened
+      selector:
+        text: {}
+
+mode: single
+
+triggers:
+  - trigger: state
+    entity_id: !input trigger_entity
+    to: "on"
+
+actions:
+  - action: skylight_guard.create_event
+    data:
+      config_entry_id: !input frame
+      summary: !input summary
+      start_date: "{{ now().date().isoformat() }}"
+      end_date: "{{ (now().date() + timedelta(days=1)).isoformat() }}"
