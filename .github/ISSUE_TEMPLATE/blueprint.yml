@@ -1,0 +1,27 @@
+name: Share a blueprint
+description: You wrote a blueprint for your frame and want it in the community folder.
+labels: [blueprint]
+body:
+  - type: input
+    id: link
+    attributes:
+      label: Link to the YAML (gist, fork or PR)
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What it does
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: Every entity, profile and frame is an input, nothing hard-coded from my house.
+          required: true
+        - label: Writes go through skylight_guard.create_event.
+          required: true
+        - label: No names, addresses, IDs or tokens in the file or screenshots.
+          required: true

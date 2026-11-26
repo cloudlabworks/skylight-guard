@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question or show your setup
+    url: https://github.com/cloudlabworks/skylight-guard/discussions
+    about: Questions, screenshots of your frame, half-formed ideas.

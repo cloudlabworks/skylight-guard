@@ -2,6 +2,11 @@
 
 Thanks for helping. Keep changes small and focused.
 
+The easiest contribution is a blueprint: a new use for a Skylight frame.
+Start from `blueprints/automation/community/_template.yaml` and follow
+`blueprints/automation/community/README.md`. CI checks it the same way it
+checks the core blueprints.
+
 1. Fork, branch from `main`, and open a pull request.
 2. Run the checks locally:
 
@@ -9,6 +14,7 @@ Thanks for helping. Keep changes small and focused.
    python3 -m venv .venv
    .venv/bin/pip install -r requirements-dev.txt
    .venv/bin/ruff check .
+   .venv/bin/ruff format --check .
    .venv/bin/pytest
    ```
 

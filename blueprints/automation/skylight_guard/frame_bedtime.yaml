@@ -1,0 +1,65 @@
+blueprint:
+  name: Skylight Guard - frame bedtime
+  description: >-
+    Put the Skylight frame to sleep at night and wake it in the morning, or
+    tie it to any on/off entity (house mode, presence, a "movie night"
+    toggle). A new use for the frame's sleep-mode switch.
+  domain: automation
+  homeassistant:
+    min_version: "2024.11.0"
+  source_url: https://github.com/cloudlabworks/skylight-guard/blob/main/blueprints/automation/skylight_guard/frame_bedtime.yaml
+  input:
+    sleep_switch:
+      name: Frame sleep-mode switch
+      description: The "Sleep mode" switch from Skylight Guard.
+      selector:
+        entity:
+          integration: skylight_guard
+          domain: switch
+    sleep_time:
+      name: Sleep at
+      default: "21:30:00"
+      selector:
+        time: {}
+    wake_time:
+      name: Wake at
+      default: "06:30:00"
+      selector:
+        time: {}
+    quiet_entity:
+      name: Optional quiet-mode entity
+      description: >-
+        When this entity turns on, the frame sleeps; when it turns off, the
+        frame wakes. Leave empty to use the times only.
+      default: []
+      selector:
+        entity:
+          multiple: true
+
+mode: restart
+
+# trigger_variables, not variables: template triggers render before the run starts.
+trigger_variables:
+  quiet_entity: !input quiet_entity
+
+triggers:
+  - trigger: time
+    at: !input sleep_time
+    id: sleep
+  - trigger: time
+    at: !input wake_time
+    id: wake
+  # Template triggers stay valid when no quiet entity is picked.
+  - trigger: template
+    value_template: "{{ quiet_entity | select('is_state', 'on') | list | count > 0 }}"
+    id: sleep
+  - trigger: template
+    value_template: >-
+      {{ quiet_entity | count > 0
+         and quiet_entity | select('is_state', 'on') | list | count == 0 }}
+    id: wake
+
+actions:
+  - action: "{{ 'switch.turn_on' if trigger.id == 'sleep' else 'switch.turn_off' }}"
+    target:
+      entity_id: !input sleep_switch
